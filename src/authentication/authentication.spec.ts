@@ -4,7 +4,7 @@ import {
   createSignature,
   createHeaders,
   Payload,
-} from "./coinmotion-api";
+} from "./authentication";
 
 describe("Tests for coinmotion api functions", () => {
   it("should create a nonce", () => {

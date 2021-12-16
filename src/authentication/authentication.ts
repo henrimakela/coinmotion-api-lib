@@ -36,7 +36,3 @@ export const createHeaders = (key: string, signature: string) => {
 export const createSignature = (payload, secret): string => {
   return HmacSHA512(JSON.stringify(payload), secret).toString();
 };
-
-export const createPayload = (nonce: number, parameters: any = {}): Payload => {
-  return { nonce, parameters };
-};

@@ -3,6 +3,12 @@ import {
   createSignature,
   createHeaders,
 } from "../authentication/authentication";
+import {
+  FiatPayload,
+  CryptoPayload,
+  createFiatPayload,
+  createCryptoPayload,
+} from "../model/Payload";
 import axios from "axios";
 
 /**
@@ -19,18 +25,26 @@ export const buyWithCrypto = async (
   cryptoCurrencyCode: string,
   amountInBTC: number
 ) => {
-  const url = "https://api.coinmotion.com/v1/buy";
-  const nonce: number = createNonce();
-  const payload = {
-    nonce,
-    amount_btc: amountInBTC,
-    currency_code: cryptoCurrencyCode,
-  };
-  const signature: string = createSignature(payload, secret);
-  const headers = createHeaders(key, signature);
+  let response;
+  try {
+    const url = "https://api.coinmotion.com/v1/buy";
+    const nonce: number = createNonce();
+    const payload: CryptoPayload = createCryptoPayload(
+      nonce,
+      amountInBTC,
+      cryptoCurrencyCode
+    );
+    const signature: string = createSignature(payload, secret);
+    const headers = createHeaders(key, signature);
+    const response = await axios.post(url, payload, { headers });
 
-  const response = await axios.post(url, payload, { headers });
-  return response;
+    if (!response.data.success) {
+      throw new Error(response.data.message);
+    }
+  } catch (err) {
+    throw err;
+  }
+  return response.data;
 };
 
 /**
@@ -47,16 +61,23 @@ export const buyWithFiat = async (
   cryptoCurrencyCode: string,
   amountInFiat: number
 ) => {
-  const url = "https://api.coinmotion.com/v1/buy";
-  const nonce: number = createNonce();
-  const payload = {
-    nonce,
-    amount_cur: amountInFiat,
-    currency_code: cryptoCurrencyCode,
-  };
-  const signature: string = createSignature(payload, secret);
-  const headers = createHeaders(key, signature);
-
-  const response = await axios.post(url, payload, { headers });
-  return response;
+  let response;
+  try {
+    const url = "https://api.coinmotion.com/v1/buy";
+    const nonce: number = createNonce();
+    const payload: FiatPayload = createFiatPayload(
+      nonce,
+      amountInFiat,
+      cryptoCurrencyCode
+    );
+    const signature: string = createSignature(payload, secret);
+    const headers = createHeaders(key, signature);
+    response = await axios.post(url, payload, { headers });
+    if (!response.data.success) {
+      throw new Error(response.data.message);
+    }
+  } catch (err) {
+    throw err;
+  }
+  return response.data;
 };

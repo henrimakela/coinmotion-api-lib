@@ -1,11 +1,11 @@
 import {
   createNonce,
-  createPayload,
   createSignature,
   createHeaders,
   Payload,
 } from "./authentication";
 
+import { BalancePayload, createBalancePayload } from "../model/Payload";
 describe("Tests for coinmotion api functions", () => {
   it("should create a nonce", () => {
     const nonce = createNonce();
@@ -15,14 +15,14 @@ describe("Tests for coinmotion api functions", () => {
 
   it("should create a payload", () => {
     const nonce: number = createNonce();
-    const payload: Payload = createPayload(nonce);
+    const payload: BalancePayload = createBalancePayload(nonce);
     expect(payload).not.toBe(undefined);
     expect(payload.nonce).toBe(nonce);
   });
 
   it("should create a signature", () => {
     const nonce: number = createNonce();
-    const payload: Payload = createPayload(nonce);
+    const payload: BalancePayload = createBalancePayload(nonce);
     const secret = "123123";
     const signature = createSignature(payload, secret);
     expect(signature).toEqual(createSignature(payload, secret));
@@ -32,7 +32,7 @@ describe("Tests for coinmotion api functions", () => {
   it("should create headers", () => {
     const key = "123";
     const nonce: number = createNonce();
-    const payload: Payload = createPayload(nonce);
+    const payload: BalancePayload = createBalancePayload(nonce);
     const secret = "123123";
     const signature = createSignature(payload, secret);
 
